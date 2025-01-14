@@ -97,7 +97,7 @@ public class ClienteChat extends JFrame implements Runnable {
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            pw.println(nombre);
+            pw.println(nombre + " se ha conectado al chat");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al conectar al servidor: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -110,6 +110,10 @@ public class ClienteChat extends JFrame implements Runnable {
     private void enviarMensaje() {
         String mensaje = JMensaje.getText().trim();
         if (!mensaje.isEmpty()) {
+            if(mensaje.equals("*")){
+                pw.println(nombre + " se ha desconectado.");
+                Thread.interrupted();
+            }
             pw.println(nombre +": " + mensaje);
             JMensaje.setText("");
         }

@@ -23,6 +23,8 @@ public class ServidorChat {
                 Socket cliente = servidor.accept();
                 System.out.println("Nuevo cliente conectado: " + cliente.getInetAddress());
 
+                clientesConectados.anadirCliente(cliente);
+
                 HiloCliente hiloCliente = new HiloCliente(cliente, clientesConectados);
                 hiloCliente.start();
             } else {

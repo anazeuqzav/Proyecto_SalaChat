@@ -10,6 +10,7 @@ public class HiloCliente extends Thread{
     Socket cliente = null;
     ClientesConectados clientesConectados;
 
+
     // Constructor
     public HiloCliente(Socket cliente, ClientesConectados clientesConectados) {
         this.cliente = cliente;
@@ -23,9 +24,12 @@ public class HiloCliente extends Thread{
 
             String mensaje;
             while((mensaje = br.readLine()) != null){
-                if(mensaje.equals("*")) {
+                String contenidoMensaje = mensaje.substring(mensaje.indexOf(":") + 1).trim();
+                if(contenidoMensaje.equals("*")) {
                     clientesConectados.eliminarCliente(cliente);
-                    System.out.println("Cliente desconectado: " + cliente.getInetAddress());                    /** TODO!!! POR AQUI ME HE QUEDADO */
+                    System.out.println("Cliente desconectado: " + cliente.getInetAddress());
+                    cliente.close();
+
                 } else {
                     System.out.println("Mensaje recibido: " + mensaje);
                     enviarMensajeATodos(mensaje);
@@ -45,7 +49,7 @@ public class HiloCliente extends Thread{
     private void enviarMensajeATodos(String mensaje){
         for(Socket s: clientesConectados.obtenerClientesConectados()) {
             try {
-                PrintWriter pw = new PrintWriter(cliente.getOutputStream(), true);
+                PrintWriter pw = new PrintWriter(s.getOutputStream(), true);
                 pw.println(mensaje);
             } catch (IOException e) {
                 System.err.println("Error enviando mensaje: " + e.getMessage());
