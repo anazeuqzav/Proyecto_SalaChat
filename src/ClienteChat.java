@@ -1,4 +1,9 @@
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -24,7 +29,7 @@ public class ClienteChat extends JFrame implements Runnable {
     private JButton JEnviar;
     private JButton JSalir;
     private JScrollPane JScrollPane;
-    private JTextArea JChat;
+    private JTextPane JChat;
     private JPanel ventana;
 
     // Variables para la conexión
@@ -97,6 +102,8 @@ public class ClienteChat extends JFrame implements Runnable {
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            pw.println(nombre); // envía el nombre al servidor
+
             pw.println(nombre + " se ha conectado al chat");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al conectar al servidor: " + e.getMessage(),
@@ -132,6 +139,18 @@ public class ClienteChat extends JFrame implements Runnable {
         }
     }
 
+    private void agregarMensaje(String mensaje, Color color) {
+        StyledDocument doc = JChat.getStyledDocument();
+        Style estilo = JChat.addStyle("Estilo", null);
+        StyleConstants.setForeground(estilo, color);
+
+        try {
+            doc.insertString(doc.getLength(), mensaje + "\n", estilo);
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * El método run() debe completarse con el código correspondiente a la
      * ventana de chat, esto se hace así para poder utilizar la interfaz
@@ -144,7 +163,13 @@ public class ClienteChat extends JFrame implements Runnable {
         try {
             // Leer mensajes del servidor
             while ((mensaje = br.readLine()) != null) {
-                JChat.append(mensaje + "\n");
+                if (mensaje.startsWith(nombre)) {
+                    agregarMensaje(mensaje, new Color(85, 153, 71)); // Mensajes del usuario en verde
+                } else if (mensaje.contains("[PRIVADO]")){
+                    agregarMensaje(mensaje, new Color(250, 109, 105)); // Mensajes de otros usuarios en negro
+                } else {
+                    agregarMensaje(mensaje, new Color(40, 65, 104));
+                }
             }
         } catch (IOException e) {
             System.err.println("Error en el hilo de lectura: " + e.getMessage());

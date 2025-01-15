@@ -41,7 +41,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="68ec4" class="javax.swing.JTextArea" binding="JChat">
+          <component id="68ec4" class="javax.swing.JTextPane" binding="JChat">
             <constraints/>
             <properties>
               <text value=""/>

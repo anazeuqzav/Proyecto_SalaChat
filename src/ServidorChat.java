@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -23,9 +25,15 @@ public class ServidorChat {
                 Socket cliente = servidor.accept();
                 System.out.println("Nuevo cliente conectado: " + cliente.getInetAddress());
 
-                clientesConectados.anadirCliente(cliente);
+                // Leer el nombre del cliente
+                BufferedReader br = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+                String nombreCliente = br.readLine(); // Leer la primera línea enviada por el cliente, que es su nombre
 
-                HiloCliente hiloCliente = new HiloCliente(cliente, clientesConectados);
+                System.out.println("Nombre del cliente: " + nombreCliente);
+
+                clientesConectados.anadirCliente(nombreCliente, cliente);
+
+                HiloCliente hiloCliente = new HiloCliente(nombreCliente, cliente, clientesConectados);
                 hiloCliente.start();
             } else {
                 System.out.println("Se ha alcanzado el número máximo de clientes");
