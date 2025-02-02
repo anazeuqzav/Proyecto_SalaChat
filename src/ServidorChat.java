@@ -21,17 +21,18 @@ public class ServidorChat {
         System.out.println("Servidor iniciado...");
 
         while (true) {
+            // Comprueba si se puede aceptar un nuevo cliente
             if (clientesConectados.numeroClientesConectados() < MAX_CLIENTES) {
                 Socket cliente = servidor.accept();
                 System.out.println("Nuevo cliente conectado: " + cliente.getInetAddress());
 
                 // Leer el nombre del cliente
                 BufferedReader br = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
-                String nombreCliente = br.readLine(); // Leer la primera línea enviada por el cliente, que es su nombre
+                String nombreCliente = br.readLine();
 
                 System.out.println("Nombre del cliente: " + nombreCliente);
 
-                clientesConectados.anadirCliente(nombreCliente, cliente);
+                clientesConectados.anadirCliente(nombreCliente, cliente); // guarda el cliente conectado con su nombre
 
                 HiloCliente hiloCliente = new HiloCliente(nombreCliente, cliente, clientesConectados);
                 hiloCliente.start();
